@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import { Terminal, Github, CodeXml, ArrowUpRight } from 'lucide-react';
 import { Button } from './ui/Button';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export const CalloutBanner: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="py-12 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,10 +25,10 @@ export const CalloutBanner: React.FC = () => {
             </div>
             <div>
               <h4 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                Buscando código-fonte ou arquiteturas detalhadas?
+                {t('callout.title')}
               </h4>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-xl">
-                Confira meus repositórios abertos, boilerplates modulares e experimentos no ecossistema open-source.
+                {t('callout.description')}
               </p>
             </div>
           </div>
@@ -40,7 +43,7 @@ export const CalloutBanner: React.FC = () => {
             rel="noopener noreferrer"
             className="shrink-0 font-semibold px-6 shadow-md shadow-blue-600/20"
           >
-            Acessar GitHub
+            {t('callout.button')}
           </Button>
         </motion.div>
       </div>

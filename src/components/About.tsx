@@ -1,17 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Briefcase, CheckCircle2, Sparkles, Send } from 'lucide-react';
+import { Briefcase, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from './ui/Button';
 import { SectionTitle } from './ui/SectionTitle';
+import TextType from './TextType';
 import { IMAGES } from '../assets/images';
-import { PERSONAL_INFO, STATS } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 interface AboutProps {
   onHireMeClick?: () => void;
 }
 
 export const About: React.FC<AboutProps> = ({ onHireMeClick }) => {
+  const { language, t } = useLanguage();
+  const { personalInfo } = getLocalizedPortfolio(language);
+
   const triggerConfettiAndScroll = () => {
     confetti({
       particleCount: 80,
@@ -31,10 +36,10 @@ export const About: React.FC<AboutProps> = ({ onHireMeClick }) => {
   };
 
   const keyStrengths = [
-    'Arquitetura escalável com Next.js & React',
-    'Componentes acessíveis com Tailwind & Motion',
-    'APIs resilientes em Node.js & TypeScript',
-    'Otimização extrema de Core Web Vitals',
+    t('about.strength1'),
+    t('about.strength2'),
+    t('about.strength3'),
+    t('about.strength4'),
   ];
 
   return (
@@ -82,7 +87,7 @@ export const About: React.FC<AboutProps> = ({ onHireMeClick }) => {
                 <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-slate-800 relative">
                   <img
                     src={IMAGES.avatarAbout}
-                    alt="About Lucas Silva"
+                    alt={`${personalInfo.name} - ${t('about.title')}`}
                     className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
@@ -105,20 +110,29 @@ export const About: React.FC<AboutProps> = ({ onHireMeClick }) => {
             {/* Section Title */}
             <div className="mb-4">
               <span className="text-xs font-mono font-semibold tracking-wider text-sky-600 dark:text-sky-400 uppercase">
-                Discover My Story
+                {t('about.eyebrow')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
-                About <span className="text-sky-500 dark:text-sky-400">Me</span>
+                <TextType
+                  key={`${language}-${t('about.title')}`}
+                  as="span"
+                  text={t('about.title')}
+                  typingSpeed={42}
+                  typeEffect="fade"
+                  loop={false}
+                  showCursor={false}
+                  startOnVisible
+                />
               </h2>
             </div>
 
             {/* Prose description */}
             <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-              {PERSONAL_INFO.bio}
+              {personalInfo.bio}
             </p>
 
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
-              Meu foco é criar pontes entre a visão de produto, design intuitivo e arquiteturas de código sustentáveis. Acredito que excelência técnica e experiência do usuário andam de mãos dadas em cada linha de código que escrevo.
+              {t('about.paragraph')}
             </p>
 
             {/* Strengths checkmarks */}
@@ -131,20 +145,6 @@ export const About: React.FC<AboutProps> = ({ onHireMeClick }) => {
               ))}
             </div>
 
-            {/* Stats Row with Blue Highlight */}
-            <div className="grid grid-cols-3 gap-3 sm:gap-6 py-4 px-4 sm:px-6 mb-8 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700 shadow-sm w-full">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-2xl sm:text-3xl font-extrabold text-sky-500 dark:text-sky-400 font-mono tracking-tight">
-                    {stat.value}
-                  </div>
-                  <div className="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 whitespace-nowrap">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-
             {/* Hire Me CTA Button */}
             <Button
               variant="primary"
@@ -153,7 +153,7 @@ export const About: React.FC<AboutProps> = ({ onHireMeClick }) => {
               onClick={triggerConfettiAndScroll}
               className="font-semibold px-8"
             >
-              Hire Me
+              {t('about.hire')}
             </Button>
 
           </motion.div>

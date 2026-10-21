@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Menu, X, FileText, Sparkles } from 'lucide-react';
+import { Sun, Moon, Menu, X, FileText, Languages } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface NavbarProps {
   darkMode: boolean;
@@ -11,23 +12,29 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenResume }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const isProjectsPage = window.location.pathname.replace(/\/+$/, '') === '/projects';
+  const [activeSection, setActiveSection] = useState(isProjectsPage ? 'projects' : 'home');
+  const { language, toggleLanguage, t } = useLanguage();
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Languages', href: '#languages' },
-    { name: 'Work', href: '#work' },
-    { name: 'Contact', href: '#contact' },
+    { id: 'home', name: t('nav.home'), href: isProjectsPage ? '/' : '#home' },
+    { id: 'about', name: t('nav.about'), href: isProjectsPage ? '/#about' : '#about' },
+    { id: 'experience', name: t('nav.experience'), href: isProjectsPage ? '/#experience' : '#experience' },
+    { id: 'languages', name: t('nav.languages'), href: isProjectsPage ? '/#languages' : '#languages' },
+    { id: 'projects', name: t('nav.work'), href: '/projects' },
+    { id: 'contact', name: t('nav.contact'), href: isProjectsPage ? '/#contact' : '#contact' },
   ];
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+      if (isProjectsPage) {
+        setActiveSection('projects');
+        return;
+      }
 
       // Section tracking
-      const sections = ['home', 'about', 'experience', 'languages', 'work', 'contact'];
+      const sections = ['home', 'about', 'experience', 'languages', 'contact'];
       const scrollPosition = window.scrollY + 120;
 
       for (const section of sections) {
@@ -44,8 +51,9 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isProjectsPage]);
 
   return (
     <header
@@ -60,30 +68,30 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
           {/* Brand Logo */}
           <div className="flex items-center gap-3">
             <a
-              href="#home"
-              className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition-opacity"
+              href={isProjectsPage ? '/' : '#home'}
+              className="inline-flex h-12 w-[5.25rem] shrink-0 items-center justify-center"
+              aria-label="Manuel Garcia — início"
             >
-              Portfolio<span className="text-sky-500">.</span>
+              <img src="/brand-logo.png" alt="Logo de Manuel Garcia" className="h-9 w-full object-contain" />
             </a>
 
             {/* Availability Pill */}
-            <div className="hidden lg:inline-flex items-center gap-2 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-200/80 dark:border-sky-800 px-3 py-0.5 text-xs font-mono text-sky-700 dark:text-sky-300">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
-              </span>
-              <span>Disponível para projetos</span>
+            <div className="hidden lg:inline-flex rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-200/80 dark:border-sky-800 px-3 py-0.5 text-xs font-mono text-sky-700 dark:text-sky-300">
+              <span>{t('nav.availability')}</span>
             </div>
           </div>
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-6 lg:gap-8">
             {navLinks.map((link) => {
-              const isActive = activeSection === link.href.substring(1);
+              const isActive = activeSection === link.id;
               return (
                 <a
                   key={link.name}
                   href={link.href}
+                  onClick={() => {
+                    if (link.id === 'projects') setActiveSection('projects');
+                  }}
                   className={`text-sm font-medium transition-colors relative py-1 ${
                     isActive
                       ? 'text-sky-500 dark:text-sky-400 font-semibold'
@@ -105,6 +113,17 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
 
           {/* Right Controls */}
           <div className="flex items-center gap-2.5 sm:gap-3">
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-slate-200 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-700 dark:hover:bg-slate-800 dark:hover:text-sky-400"
+              aria-label={t('language.switch')}
+              title={t('language.switch')}
+            >
+              <Languages size={15} className="text-sky-500" />
+              <span>{language.toUpperCase()}</span>
+            </button>
+
             {/* Quick Resume Button */}
             <button
               type="button"
@@ -112,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
             >
               <FileText size={14} className="text-sky-500" />
-              <span>Currículo</span>
+              <span>{t('nav.resume')}</span>
             </button>
 
             {/* Theme Toggle */}
@@ -120,7 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
               type="button"
               onClick={() => setDarkMode((prev) => !prev)}
               className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:text-sky-500 hover:bg-sky-50 dark:text-slate-300 dark:hover:text-sky-400 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700"
-              aria-label="Alternar modo escuro"
+              aria-label={darkMode ? t('nav.themeLight') : t('nav.themeDark')}
             >
               {darkMode ? (
                 <Sun size={18} className="text-amber-400 transition-transform duration-300 rotate-0 hover:rotate-45" />
@@ -134,7 +153,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               className="md:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700"
-              aria-label="Menu"
+              aria-label={t('nav.menu')}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -159,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    activeSection === link.href.substring(1)
+                    activeSection === link.id
                       ? 'bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 font-semibold'
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
@@ -177,7 +196,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, setDarkMode, onOpenRes
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-semibold rounded-xl bg-sky-500 text-white shadow-md shadow-sky-500/20"
                 >
                   <FileText size={16} />
-                  <span>Ver Currículo Completo</span>
+                  <span>{t('nav.resumeFull')}</span>
                 </button>
               </div>
             </div>

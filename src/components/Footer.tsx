@@ -1,8 +1,12 @@
 import React from 'react';
 import { Github, Linkedin, Twitter, Mail, ArrowUp } from 'lucide-react';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 export const Footer: React.FC = () => {
+  const { language, t } = useLanguage();
+  const { personalInfo } = getLocalizedPortfolio(language);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -18,20 +22,21 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-3">
             <a
               href="#home"
-              className="text-xl font-bold tracking-tight text-slate-900 dark:text-white"
+              className="inline-flex h-12 w-[5.25rem] shrink-0 items-center justify-center"
+              aria-label="Manuel Garcia — início"
             >
-              Portfolio<span className="text-sky-500">.</span>
+              <img src="/brand-logo.png" alt="Logo de Manuel Garcia" className="h-9 w-full object-contain" />
             </a>
             <span className="text-slate-300 dark:text-slate-700">|</span>
             <span className="text-xs text-slate-500 dark:text-slate-400">
-              React Specialist & Full Stack Developer
+              {personalInfo.role}
             </span>
           </div>
 
           {/* Social Links */}
           <div className="flex items-center gap-6">
             <a
-              href={PERSONAL_INFO.github}
+              href={personalInfo.github}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-mono text-slate-500 hover:text-sky-500 dark:text-slate-400 dark:hover:text-sky-400 transition-colors flex items-center gap-1.5"
@@ -40,7 +45,7 @@ export const Footer: React.FC = () => {
               <span>GitHub</span>
             </a>
             <a
-              href={PERSONAL_INFO.linkedin}
+              href={personalInfo.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-mono text-slate-500 hover:text-sky-500 dark:text-slate-400 dark:hover:text-sky-400 transition-colors flex items-center gap-1.5"
@@ -49,7 +54,7 @@ export const Footer: React.FC = () => {
               <span>LinkedIn</span>
             </a>
             <a
-              href={PERSONAL_INFO.twitter}
+              href={personalInfo.twitter}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-mono text-slate-500 hover:text-sky-500 dark:text-slate-400 dark:hover:text-sky-400 transition-colors flex items-center gap-1.5"
@@ -58,7 +63,7 @@ export const Footer: React.FC = () => {
               <span>Twitter / X</span>
             </a>
             <a
-              href={`mailto:${PERSONAL_INFO.email}`}
+              href={`mailto:${personalInfo.email}`}
               className="text-xs font-mono text-slate-500 hover:text-sky-500 dark:text-slate-400 dark:hover:text-sky-400 transition-colors flex items-center gap-1.5"
             >
               <Mail size={16} />
@@ -71,7 +76,7 @@ export const Footer: React.FC = () => {
             type="button"
             onClick={scrollToTop}
             className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 hover:text-sky-500 dark:text-slate-400 dark:hover:text-sky-400 transition-colors shadow-xs"
-            aria-label="Voltar ao topo"
+            aria-label={t('footer.backToTop')}
           >
             <ArrowUp size={16} />
           </button>
@@ -80,12 +85,12 @@ export const Footer: React.FC = () => {
         {/* Bottom row: Credits & copyright */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1.5">
-            <span>Feito com ☕ por <strong className="text-slate-800 dark:text-slate-200 font-semibold">{PERSONAL_INFO.name}</strong></span>
+            <span>{t('footer.madeBy')} <strong className="text-slate-800 dark:text-slate-200 font-semibold">{personalInfo.name}</strong></span>
           </div>
 
           <div className="flex items-center gap-4 font-mono text-[11px]">
             <span className="text-slate-400 dark:text-slate-600">v2.4.0</span>
-            <span>© {new Date().getFullYear()} Todos os direitos reservados.</span>
+            <span>© {new Date().getFullYear()} {t('footer.copyright')}</span>
           </div>
         </div>
 

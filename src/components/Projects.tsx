@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Github, ArrowUpRight, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { SectionTitle } from './ui/SectionTitle';
 import { Project, ProjectCategory } from '../types/portfolio';
-import { PROJECTS } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 interface ProjectsProps {
   onSelectProject: (project: Project) => void;
@@ -12,18 +13,21 @@ interface ProjectsProps {
 export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>('all');
   const [currentPage, setCurrentPage] = useState(0);
+  const { language, t } = useLanguage();
+  const { projects } = getLocalizedPortfolio(language);
   const itemsPerPage = 6;
 
   const categories: { id: ProjectCategory; label: string }[] = [
-    { id: 'all', label: 'Todos os projetos' },
-    { id: 'web-apps', label: 'Web Apps' },
-    { id: 'apis', label: 'APIs & Dados' },
-    { id: 'front-end', label: 'Front-end & UI' },
+    { id: 'all', label: t('projects.all') },
+    { id: 'web-apps', label: t('projects.web') },
+    { id: 'apis', label: t('projects.apis') },
+    { id: 'front-end', label: t('projects.frontend') },
+    { id: 'ai', label: t('projects.ai') },
   ];
 
   const filteredProjects = activeCategory === 'all'
-    ? PROJECTS
-    : PROJECTS.filter((p) => p.category === activeCategory);
+    ? projects
+    : projects.filter((p) => p.category === activeCategory);
 
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
   const displayedProjects = filteredProjects.slice(
@@ -47,9 +51,9 @@ export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-3">
           <div>
             <SectionTitle
-              prefix="My"
-              highlight="Recent Work"
-              subtitle="Uma seleção de soluções digitais, arquiteturas escaláveis e experiências web refinadas"
+              prefix={t('projects.titlePrefix')}
+              highlight={t('projects.title')}
+              subtitle={t('projects.subtitle')}
               align="left"
               className="mb-0"
             />
@@ -63,19 +67,19 @@ export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
                 onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                 disabled={currentPage === 0}
                 className="w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-sky-500 hover:border-sky-300 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                aria-label="Página anterior"
+                aria-label={t('projects.previous')}
               >
                 <ChevronLeft size={18} />
               </button>
               <span className="text-xs font-mono text-slate-500 dark:text-slate-400 px-1">
-                {currentPage + 1} / {totalPages}
+                {t('projects.page')} {currentPage + 1} / {totalPages}
               </span>
               <button
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={currentPage === totalPages - 1}
                 className="w-9 h-9 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-sky-500 hover:border-sky-300 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                aria-label="Próxima página"
+                aria-label={t('projects.next')}
               >
                 <ChevronRight size={18} />
               </button>
@@ -87,8 +91,8 @@ export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
         <div className="flex flex-wrap items-center justify-start gap-2 mb-10">
           {categories.map((cat) => {
             const count = cat.id === 'all'
-              ? PROJECTS.length
-              : PROJECTS.filter((p) => p.category === cat.id).length;
+              ? projects.length
+              : projects.filter((p) => p.category === cat.id).length;
             const isActive = activeCategory === cat.id;
 
             return (
@@ -135,24 +139,26 @@ export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
 
                 <div>
                   {/* Project Image Preview Frame */}
-                  {project.image && (
-                    <div className="relative w-full h-44 mb-5 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-800/80">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                        <span className="text-xs font-semibold text-white flex items-center gap-1">
-                          <Eye size={14} /> Detalhes & Arquitetura
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                  <div className="relative w-full h-44 mb-5 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700">
+                    {project.image && (
+                      <>
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                          <span className="text-xs font-semibold text-white flex items-center gap-1">
+                            <Eye size={14} /> {t('projects.details')}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
 
                   {/* Top Metadata Row */}
                   <div className="flex items-start justify-between gap-4 mb-3">
@@ -176,16 +182,18 @@ export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
                 </div>
 
                 {/* Tech Tags */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-auto">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-lg px-2.5 py-1 text-[11px] font-mono font-medium bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-100 dark:border-sky-900/60"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {project.tags.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-auto">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-lg px-2.5 py-1 text-[11px] font-mono font-medium bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-100 dark:border-sky-900/60"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -204,7 +212,7 @@ export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
                     ? 'w-8 bg-sky-500'
                     : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-sky-300'
                 }`}
-                aria-label={`Página ${idx + 1}`}
+                aria-label={`${t('projects.page')} ${idx + 1}`}
               />
             ))}
           </div>

@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SectionTitle } from './ui/SectionTitle';
-import { TESTIMONIALS } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 export const Testimonials: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { language, t } = useLanguage();
+  const { testimonials } = getLocalizedPortfolio(language);
 
   const prev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
   const next = () => {
-    setCurrentIndex((prev) => (prev === TESTIMONIALS.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
   };
 
-  const current = TESTIMONIALS[currentIndex];
+  const current = testimonials[currentIndex];
 
   return (
     <section className="py-20 md:py-28 relative overflow-hidden bg-white dark:bg-slate-950">
@@ -26,9 +29,9 @@ export const Testimonials: React.FC = () => {
         
         {/* Section Title */}
         <SectionTitle
-          prefix="What"
-          highlight="Clients Say"
-          subtitle="Depoimentos de líderes de tecnologia, fundadores e gerentes de produto"
+          prefix={t('testimonials.titlePrefix')}
+          highlight={t('testimonials.title')}
+          subtitle={t('testimonials.subtitle')}
         />
 
         {/* Carousel Container */}
@@ -39,7 +42,7 @@ export const Testimonials: React.FC = () => {
             type="button"
             onClick={prev}
             className="absolute -left-3 sm:-left-6 md:-left-12 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-sky-500 hover:border-sky-300 dark:hover:border-sky-500 transition-all cursor-pointer"
-            aria-label="Depoimento anterior"
+            aria-label={t('testimonials.previous')}
           >
             <ChevronLeft size={20} />
           </button>
@@ -101,7 +104,7 @@ export const Testimonials: React.FC = () => {
             type="button"
             onClick={next}
             className="absolute -right-3 sm:-right-6 md:-right-12 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-sky-500 hover:border-sky-300 dark:hover:border-sky-500 transition-all cursor-pointer"
-            aria-label="Próximo depoimento"
+            aria-label={t('testimonials.next')}
           >
             <ChevronRight size={20} />
           </button>
@@ -109,7 +112,7 @@ export const Testimonials: React.FC = () => {
 
         {/* Indicator Dots */}
         <div className="flex justify-center items-center gap-2 mt-8">
-          {TESTIMONIALS.map((item, idx) => (
+          {testimonials.map((item, idx) => (
             <button
               key={item.id}
               type="button"
@@ -119,7 +122,7 @@ export const Testimonials: React.FC = () => {
                   ? 'w-7 bg-sky-500'
                   : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-sky-300'
               }`}
-              aria-label={`Depoimento ${idx + 1}`}
+              aria-label={`${t('testimonials.item')} ${idx + 1}`}
             />
           ))}
         </div>

@@ -4,10 +4,13 @@ import { Briefcase, GraduationCap, Award, Calendar, MapPin, ChevronRight } from 
 import { SectionTitle } from './ui/SectionTitle';
 import { Card } from './ui/Card';
 import { IMAGES } from '../assets/images';
-import { WORK_EXPERIENCE, EDUCATION_EXPERIENCE } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 export const Experience: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'work' | 'education'>('all');
+  const { language, t } = useLanguage();
+  const { workExperience, educationExperience, personalInfo } = getLocalizedPortfolio(language);
 
   return (
     <section id="experience" className="py-20 md:py-28 relative overflow-hidden bg-white dark:bg-slate-950">
@@ -27,9 +30,9 @@ export const Experience: React.FC = () => {
         
         {/* Section Title */}
         <SectionTitle
-          prefix="My"
-          highlight="Experience"
-          subtitle="My professional journey and educational background in modern web engineering"
+          prefix={t('experience.titlePrefix')}
+          highlight={t('experience.title')}
+          subtitle={t('experience.subtitle')}
         />
 
         {/* Mobile Filter Tabs (Visible on small screens) */}
@@ -43,7 +46,7 @@ export const Experience: React.FC = () => {
                 : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            Todos
+            {t('experience.all')}
           </button>
           <button
             type="button"
@@ -54,7 +57,7 @@ export const Experience: React.FC = () => {
                 : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            Carreira
+            {t('experience.career')}
           </button>
           <button
             type="button"
@@ -65,7 +68,7 @@ export const Experience: React.FC = () => {
                 : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            Educação
+            {t('experience.education')}
           </button>
         </div>
 
@@ -81,11 +84,11 @@ export const Experience: React.FC = () => {
             <div className="hidden md:flex items-center gap-2 mb-2 pb-2 border-b border-slate-100 dark:border-slate-800">
               <Briefcase size={18} className="text-sky-500" />
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-mono">
-                Trajetória Profissional
+                {t('experience.workHistory')}
               </h3>
             </div>
 
-            {WORK_EXPERIENCE.map((exp, idx) => (
+            {workExperience.map((exp, idx) => (
               <motion.div
                 key={exp.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -147,7 +150,7 @@ export const Experience: React.FC = () => {
               >
                 <img
                   src={IMAGES.avatarExperience}
-                  alt="Lucas Silva - Experiência"
+                  alt={`${personalInfo.name} - ${t('nav.experience')}`}
                   className="w-full h-full object-cover object-top rounded-2xl transform hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
@@ -159,10 +162,9 @@ export const Experience: React.FC = () => {
               {/* "5+ Years Journey" Pill Badge under the illustration */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="relative z-20 -mt-5 bg-white dark:bg-slate-800 px-5 py-1.5 rounded-full shadow-lg shadow-sky-500/20 border border-sky-300 dark:border-sky-600 text-xs font-mono font-bold text-sky-600 dark:text-sky-300 flex items-center gap-1.5"
+                className="relative z-20 -mt-5 bg-white dark:bg-slate-800 px-5 py-1.5 rounded-full shadow-lg shadow-sky-500/20 border border-sky-300 dark:border-sky-600 text-xs font-mono font-bold text-sky-600 dark:text-sky-300"
               >
-                <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping" />
-                <span>5+ Years Journey</span>
+                <span>{t('experience.journey')}</span>
               </motion.div>
             </motion.div>
           </div>
@@ -176,11 +178,11 @@ export const Experience: React.FC = () => {
             <div className="hidden md:flex items-center gap-2 mb-2 pb-2 border-b border-slate-100 dark:border-slate-800">
               <GraduationCap size={18} className="text-sky-500" />
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-mono">
-                Educação & Certificados
+                {t('experience.educationHistory')}
               </h3>
             </div>
 
-            {EDUCATION_EXPERIENCE.map((edu, idx) => (
+            {educationExperience.map((edu, idx) => (
               <motion.div
                 key={edu.id}
                 initial={{ opacity: 0, x: 20 }}

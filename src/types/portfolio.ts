@@ -1,4 +1,4 @@
-export type ProjectCategory = 'all' | 'web-apps' | 'apis' | 'front-end';
+export type ProjectCategory = 'all' | 'web-apps' | 'apis' | 'front-end' | 'ai';
 
 export interface Project {
   id: string;
@@ -42,11 +42,4 @@ export interface Testimonial {
   content: string;
   rating: number;
   avatar: string;
-}
-
-export interface StatItem {
-  value: string;
-  numberValue: number;
-  suffix: string;
-  label: string;
 }

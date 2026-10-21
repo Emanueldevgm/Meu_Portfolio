@@ -2,35 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { SectionTitle } from './ui/SectionTitle';
-import { LANGUAGES } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 export const Languages: React.FC = () => {
   const [isInView, setIsInView] = useState(false);
-  const [animatedPercentages, setAnimatedPercentages] = useState<{ [key: string]: number }>({
-    GB: 0,
-    ES: 0,
-    DE: 0,
-    FR: 0,
-  });
+  const [animatedPercentages, setAnimatedPercentages] = useState<Record<string, number>>({});
+  const { language, t } = useLanguage();
+  const { languages } = getLocalizedPortfolio(language);
 
   useEffect(() => {
     if (isInView) {
       const timer = setTimeout(() => {
-        setAnimatedPercentages({
-          GB: 95,
-          ES: 75,
-          DE: 45,
-          FR: 30,
-        });
+        setAnimatedPercentages(Object.fromEntries(
+          languages.map((item) => [item.code, item.percentage])
+        ));
       }, 150);
       return () => clearTimeout(timer);
     } else {
-      setAnimatedPercentages({
-        GB: 0,
-        ES: 0,
-        DE: 0,
-        FR: 0,
-      });
+      setAnimatedPercentages({});
     }
   }, [isInView]);
 
@@ -48,9 +38,9 @@ export const Languages: React.FC = () => {
         
         {/* Section Title */}
         <SectionTitle
-          prefix="Languages"
-          highlight="I Speak"
-          subtitle="Communicating with the world in multiple languages across international teams"
+          prefix={t('languages.titlePrefix')}
+          highlight={t('languages.title')}
+          subtitle={t('languages.subtitle')}
         />
 
         {/* 4 Circular Progress Bars */}
@@ -59,7 +49,7 @@ export const Languages: React.FC = () => {
           viewport={{ once: true, margin: '-60px' }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 max-w-4xl mx-auto items-center"
         >
-          {LANGUAGES.map((lang, index) => {
+          {languages.map((lang, index) => {
             const currentPercent = animatedPercentages[lang.code] || 0;
 
             return (

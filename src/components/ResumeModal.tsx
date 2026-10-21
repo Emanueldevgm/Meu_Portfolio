@@ -1,8 +1,9 @@
 import React from 'react';
-import { Download, Printer, Mail, MapPin, Globe, ExternalLink, Briefcase, GraduationCap, Code } from 'lucide-react';
+import { Download, Printer, Mail, MapPin, Briefcase, GraduationCap } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
-import { PERSONAL_INFO, WORK_EXPERIENCE, EDUCATION_EXPERIENCE, LANGUAGES } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -10,30 +11,52 @@ interface ResumeModalProps {
 }
 
 export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => {
+  const { language, t } = useLanguage();
+  const { personalInfo, workExperience, educationExperience, languages } = getLocalizedPortfolio(language);
+
   const handlePrint = () => {
     window.print();
   };
 
+  const handleDownload = () => {
+    const isPT = language === 'pt';
+
+    const cvPath = isPT
+      ? '/Curriculum/Curriculo_Manuel_Garcia PT.pdf'
+      : '/Curriculum/Curriculo_Manuel_Garcia EN.pdf';
+
+    const downloadName = isPT
+      ? 'Curriculo_Manuel_Garcia_PT.pdf'
+      : 'Curriculo_Manuel_Garcia_EN.pdf';
+
+    const link = document.createElement('a');
+    link.href = encodeURI(cvPath);
+    link.download = downloadName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Currículo Profissional" maxWidth="2xl">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('resume.title')} maxWidth="2xl">
       <div className="space-y-6 text-slate-700 dark:text-slate-300">
         
         {/* Header Profile Summary */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {PERSONAL_INFO.name}
+              {personalInfo.name}
             </h2>
             <p className="text-sm font-semibold text-sky-600 dark:text-sky-400">
-              {PERSONAL_INFO.role}
+              {personalInfo.role}
             </p>
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-2">
               <span className="flex items-center gap-1">
-                <MapPin size={12} /> {PERSONAL_INFO.location}
+                <MapPin size={12} /> {personalInfo.location}
               </span>
               <span>·</span>
               <span className="flex items-center gap-1">
-                <Mail size={12} /> {PERSONAL_INFO.email}
+                <Mail size={12} /> {personalInfo.email}
               </span>
             </div>
           </div>
@@ -45,17 +68,15 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
             >
               <Printer size={14} />
-              <span>Imprimir</span>
+              <span>{t('resume.print')}</span>
             </button>
             <Button
               variant="primary"
               size="sm"
               icon={<Download size={14} />}
-              onClick={() => {
-                alert('Currículo em PDF pronto para download!');
-              }}
+              onClick={handleDownload}
             >
-              Download PDF
+              {t('resume.download')}
             </Button>
           </div>
         </div>
@@ -63,10 +84,10 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
         {/* Professional Summary */}
         <div>
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">
-            Resumo Profissional
+            {t('resume.summary')}
           </h3>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Desenvolvedor Full Stack Sênior com mais de 5 anos de especialização em ecossistema React, Next.js e TypeScript. Histórico comprovado no desenvolvimento de interfaces reativas de alto tráfego, design systems escaláveis e micro-serviços em Node.js. Foco contínuo em performance, acessibilidade e arquiteturas sustentáveis.
+            {t('resume.summaryText')}
           </p>
         </div>
 
@@ -74,10 +95,10 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
         <div>
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-3 flex items-center gap-1.5">
             <Briefcase size={14} />
-            <span>Experiência Profissional</span>
+            <span>{t('resume.experience')}</span>
           </h3>
           <div className="space-y-4">
-            {WORK_EXPERIENCE.map((exp) => (
+            {workExperience.map((exp) => (
               <div key={exp.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -106,10 +127,10 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
         <div>
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-3 flex items-center gap-1.5">
             <GraduationCap size={14} />
-            <span>Formação & Certificações</span>
+            <span>{t('resume.education')}</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {EDUCATION_EXPERIENCE.map((edu) => (
+            {educationExperience.map((edu) => (
               <div key={edu.id} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                 <div className="text-xs font-bold text-slate-900 dark:text-white">
                   {edu.role}
@@ -125,10 +146,10 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
         {/* Languages Matrix */}
         <div>
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">
-            Idiomas
+            {t('resume.languages')}
           </h3>
           <div className="flex flex-wrap gap-2">
-            {LANGUAGES.map((l) => (
+            {languages.map((l) => (
               <span
                 key={l.code}
                 className="px-3 py-1 rounded-lg text-xs font-mono bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-100 dark:border-sky-800"

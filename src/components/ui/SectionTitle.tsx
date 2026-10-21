@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import TextType from '../TextType';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface SectionTitleProps {
   prefix?: string;
@@ -20,6 +22,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
   align = 'center',
   className = '',
 }) => {
+  const { language } = useLanguage();
   const alignmentClasses = {
     left: 'text-left items-start',
     center: 'text-center items-center',
@@ -41,7 +44,18 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
       )}
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
         {prefix && <span>{prefix} </span>}
-        <span className="text-sky-500 dark:text-sky-400">{highlight}</span>
+        <span className="text-sky-500 dark:text-sky-400">
+          <TextType
+            key={`${language}-${highlight}`}
+            as="span"
+            text={highlight}
+            typingSpeed={42}
+            typeEffect="fade"
+            loop={false}
+            showCursor={false}
+            startOnVisible
+          />
+        </span>
         {suffix && <span> {suffix}</span>}
       </h2>
       {subtitle && (

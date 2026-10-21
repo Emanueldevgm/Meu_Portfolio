@@ -2,14 +2,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Mail, ArrowRight, Sparkles, Code2, Layers, Cpu, Database } from 'lucide-react';
 import { Button } from './ui/Button';
+import TextType from './TextType';
 import { IMAGES } from '../assets/images';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPortfolio } from '../i18n/localizedPortfolio';
 
 interface HeroProps {
   onOpenResume: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
+  const { language, t } = useLanguage();
+  const { personalInfo } = getLocalizedPortfolio(language);
   // Floating badges around the avatar
   const floatingBadges = [
     {
@@ -85,13 +89,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="inline-flex items-center gap-2 rounded-full bg-sky-50 dark:bg-sky-950/70 border border-sky-200/80 dark:border-sky-800 px-3.5 py-1.5 shadow-xs mb-6 text-xs sm:text-sm font-medium text-sky-700 dark:text-sky-300"
+              className="inline-flex items-center rounded-full bg-sky-50 dark:bg-sky-950/70 border border-sky-200/80 dark:border-sky-800 px-3.5 py-1.5 shadow-xs mb-6 text-xs sm:text-sm font-medium text-sky-700 dark:text-sky-300"
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
-              </span>
-              <span>{PERSONAL_INFO.status}</span>
+              <span>{personalInfo.status}</span>
             </motion.div>
 
             {/* Main Headline */}
@@ -101,9 +101,19 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-5"
             >
-              Hi, I'm <br className="hidden sm:inline" />
+              {t('hero.greeting')} <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                React Specialist
+                <TextType
+                  key={`${language}-${personalInfo.name}`}
+                  as="span"
+                  text={personalInfo.name}
+                  typingSpeed={42}
+                  initialDelay={250}
+                  typeEffect="fade"
+                  loop={false}
+                  showCursor={false}
+                  startOnVisible
+                />
               </span>
             </motion.h1>
 
@@ -114,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed mb-8"
             >
-              {PERSONAL_INFO.subheadline}
+              {personalInfo.subheadline}
             </motion.p>
 
             {/* Action Buttons */}
@@ -131,7 +141,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
                 onClick={onOpenResume}
                 className="w-full sm:w-auto font-semibold px-7"
               >
-                Resume
+                {t('hero.resume')}
               </Button>
               <Button
                 variant="outline"
@@ -140,7 +150,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
                 href="#contact"
                 className="w-full sm:w-auto font-semibold px-7"
               >
-                Contact Me
+                {t('hero.contact')}
               </Button>
             </motion.div>
 
@@ -153,15 +163,15 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
             >
               <div className="flex items-center gap-2">
                 <Code2 size={16} className="text-sky-500" />
-                <span>Pixel-Perfect UI</span>
+                <span>PHP / Node.js</span>
               </div>
               <div className="flex items-center gap-2">
                 <Layers size={16} className="text-sky-500" />
-                <span>Clean Architecture</span>
+                <span>{t('hero.skillApis')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Cpu size={16} className="text-sky-500" />
-                <span>Ultra-Fast Performance</span>
+                <span>{t('hero.skillAi')}</span>
               </div>
             </motion.div>
           </motion.div>
@@ -198,7 +208,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
                 <div className="w-full h-full rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
                   <img
                     src={IMAGES.avatarHero}
-                    alt="Lucas Silva - React Specialist"
+                    alt={`${personalInfo.name} - ${personalInfo.role}`}
                     className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
@@ -209,7 +219,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
                   {/* Decorative badge inside avatar */}
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3.5 py-1 rounded-full border border-sky-200/80 dark:border-sky-800 text-[11px] font-mono font-medium text-slate-800 dark:text-slate-200 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Frontend Architect</span>
+                    <span>{t('hero.architect')}</span>
                   </div>
                 </div>
               </motion.div>
